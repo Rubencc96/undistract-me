@@ -1,6 +1,13 @@
+This FORK was only made so I can use it on zsh terminals.
+Just added little changes for this repository to work on my zsh environment and with my preferences.
+- bash version is not checked in initialization.
+- exit status is collected more thoroughly. I was getting errors on commands exiting with 0.
+- Notifications urgency change depending on variables.
+
 # undistract-me
 
 Notifies you when long-running terminal commands complete.
+
 
 ## What is this?
 
@@ -40,6 +47,11 @@ that took longer than ten seconds to finish.
 ### Add to your Bash
 
     $ echo 'source /etc/profile.d/undistract-me.sh' >> ~/.bashrc
+
+### Add to your zsh
+
+    $ echo 'source /etc/profile.d/undistract-me.sh' >> ~/zshrc
+
 
 ## Configuration
 

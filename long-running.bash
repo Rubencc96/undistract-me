@@ -36,7 +36,7 @@ fi
 
 function notify_when_long_running_commands_finish_install() {
 
-    function get_now() {
+    function get_now() { # Not used, printf does not get along with zsh
         local secs
         if ! secs=$(printf "%(%s)T" -1 2> /dev/null) ; then
             secs=$(\date +'%s')
@@ -53,9 +53,7 @@ function notify_when_long_running_commands_finish_install() {
     }
 
     function sec_to_human () {
-        local H=''
-        local M=''
-        local S=''
+        local H='' M='' S=''
 
         local h=$(($1 / 3600))
         [ $h -gt 0 ] && H="${h} hour" && [ $h -gt 1 ] && H="${H}s"
@@ -70,12 +68,14 @@ function notify_when_long_running_commands_finish_install() {
     }
 
     function precmd () {
+	# exit status was getting stucked with previous command executions. This avoids it
+	local __preexec_exit_status=$?
 
         if [[ -n "$__udm_last_command_started" ]]; then
-            local now current_window
 
-            now=$(get_now)
-            current_window=$(active_window_id)
+            local now=$(get_now)
+            local current_window=$(active_window_id)
+
             if [[ $current_window != $__udm_last_window ]] ||
                  [[ ! -z "$IGNORE_WINDOW_CHECK" ]] ||
                 [[ $current_window == "nowindowid" ]] ; then
@@ -86,10 +86,10 @@ function notify_when_long_running_commands_finish_install() {
                     [[ -n $DISPLAY ]] &&
                     [[ ! " $LONG_RUNNING_IGNORE_LIST " == *" $appname "* ]] ; then
                     local icon=dialog-information
-                    local urgency=low
+                    local urgency=normal
                     if [[ $__preexec_exit_status != 0 ]]; then
                         icon=dialog-error
-                        urgency=normal
+                        urgency=critical
                     fi
                     notify=$(command -v notify-send)
                     if [ -x "$notify" ]; then
